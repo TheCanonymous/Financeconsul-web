@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceConsul OS | Grant Lifecycle Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #0b0f19;
+            --bg-card: #131a2c;
+            --bg-nav: #080c14;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --sunrise-orange: #ff6b35;
+            --midday-yellow: #ffb703;
+            --sky-blue: #00b4d8;
+            --border-color: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR NAVIGATION */
+        sidebar {
+            width: 260px;
+            background-color: var(--bg-nav);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 40px;
+        }
+
+        .brand i {
+            color: var(--sunrise-orange);
+        }
+
+        .nav-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #ffffff;
+            background-color: rgba(255, 107, 53, 0.1);
+            border-left: 3px solid var(--sunrise-orange);
+        }
+
+        .nav-item.active i {
+            color: var(--sunrise-orange);
+        }
+
+        /* MAIN CONTENT DISPLAY */
+        main {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+            background: radial-gradient(circle at top right, rgba(0, 180, 216, 0.03), transparent);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--sunrise-orange);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        /* METRIC CARDS OVERVIEW */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .card.orange::before { background-color: var(--sunrise-orange); }
+        .card.yellow::before { background-color: var(--midday-yellow); }
+        .card.blue::before { background-color: var(--sky-blue); }
+
+        .card-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-val {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .card-change {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .change-up { color: var(--sky-blue); }
+
+        /* DATA SUB-SECTIONS / PIPELINE WINDOW */
+        .section-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .table-container {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 12px 16px;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .tag {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tag-eligible { background: rgba(0, 180, 216, 0.15); color: var(--sky-blue); }
+        .tag-review { background: rgba(255, 183, 3, 0.15); color: var(--midday-yellow); }
+        .tag-awarded { background: rgba(255, 107, 53, 0.15); color: var(--sunrise-orange); }
+
+        /* INTUITIVE EXPENSE & AUDIT LIST TRACKER */
+        .audit-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .audit-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px;
+            background-color: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            border-left: 3px solid var(--border-color);
+        }
+
+        .audit-item.active { border-left-color: var(--sky-blue); }
+        
+        .audit-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background-color: rgba(30, 41, 59, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .audit-info { flex-grow: 1; }
+        .audit-name { font-size: 14px; font-weight: 600; }
+        .audit-meta { font-size: 12px; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <sidebar>
+        <div class="brand">
+            <i class="fa-solid fa-building-columns"></i>
+            <span>FinanceConsul OS</span>
+        </div>
+        <nav class="nav-group">
+            <a href="#" class="nav-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-folder-open"></i> Grants Directory</a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-list-check"></i> Tasks & Filters</a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-file-shield"></i> Audit Trails</a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-calendar-days"></i> Closeout Tracker</a>
+        </nav>
+    </sidebar>
+
+    <main>
+        <header>
+            <div>
+                <h1>Small Business Grant Pipeline</h1>
+                <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Lifecycle tracking for high-velocity funding distribution</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary"><i class="fa-solid fa-bolt"></i> Match Funding</button>
+            </div>
+        </header>
+
+        <div class="metrics-grid">
+            <div class="card orange">
+                <div class="card-label">Total Capital Distributed</div>
+                <div class="card-val">$4.85M</div>
+                <div class="card-change change-up"><i class="fa-solid fa-trend-up"></i> +12.4% this quarter</div>
+            </div>
+            <div class="card blue">
+                <div class="card-label">Active Applications</div>
+                <div class="card-val">127</div>
+                <div class="card-change text-muted">Across 14 categories</div>
+            </div>
+            <div class="card yellow">
+                <div class="card-label">Pending Closeout Audits</div>
+                <div class="card-val">18</div>
+                <div class="card-change" style="color: var(--midday-yellow);"><i class="fa-solid fa-clock"></i> Action required</div>
+            </div>
+            <div class="card orange">
+                <div class="card-label">Auto-Match Accuracy</div>
+                <div class="card-val">98.4%</div>
+                <div class="card-change change-up"><i class="fa-solid fa-shield"></i> Verified safe</div>
+            </div>
+        </div>
+
+        <div class="section-grid">
+            <div class="table-container">
+                <div class="section-header">
+                    <div class="section-title">Active Program Tracking</div>
+                    <i class="fa-solid fa-ellipsis-vertical text-muted" style="cursor:pointer;"></i>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Program Name</th>
+                            <th>Target Demographic</th>
+                            <th>Value Allocation</th>
+                            <th>Compliance Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 600;">Urban Tech Revitalization Grant</td>
+                            <td>Tech Startups</td>
+                            <td>$450,000</td>
+                            <td><span class="tag tag-eligible">Eligible</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">Minority Agri-Business Funding</td>
+                            <td>Agricultural Firms</td>
+                            <td>$127,350</td>
+                            <td><span class="tag tag-awarded">Awarded</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">Sustainable Logistics Block Grant</td>
+                            <td>Supply Chain/SMEs</td>
+                            <td>$357,650</td>
+                            <td><span class="tag tag-review">In Review</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <div class="section-header">
+                    <div class="section-title">Audit Infrastructure</div>
+                </div>
+                <div class="audit-list">
+                    <div class="audit-item active">
+                        <div class="audit-icon" style="color: var(--sky-blue);"><i class="fa-solid fa-file-contract"></i></div>
+                        <div class="audit-info">
+                            <div class="audit-name">NOFO Verification</div>
+                            <div class="audit-meta">Narrative generated • 100%</div>
+                        </div>
+                    </div>
+                    <div class="audit-item">
+                        <div class="audit-icon" style="color: var(--midday-yellow);"><i class="fa-solid fa-receipt"></i></div>
+                        <div class="audit-info">
+                            <div class="audit-name">Expense Verification</div>
+                            <div class="audit-meta">3 items awaiting validation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+                                                                          </html>
